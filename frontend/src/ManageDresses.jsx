@@ -75,9 +75,6 @@ const ManageDresses = () => {
       <div className="container mt-4">
         <div className="row mb-4">
           <div className="col">
-            <Link to="/" className="btn btn-outline-secondary me-2">
-              <i className="bi bi-arrow-left me-2"></i>Back to Shop
-            </Link>
             <Link to="/add-dress" className="btn btn-primary">
               <i className="bi bi-plus-circle me-2"></i>Add New Dress
             </Link>
@@ -88,20 +85,26 @@ const ManageDresses = () => {
           <table className="table table-hover">
             <thead>
               <tr>
-                <th>Name</th>
-                <th>Category</th>
-                <th>Price</th>
-                <th>Discount</th>
-                <th>Stock</th>
-                <th>Actions</th>
+                <th className="text-white">Name</th>
+                <th className="text-white">Price</th>
+                <th className="text-white">Discount</th>
+                <th className="text-white">Stock</th>
+                <th className="text-white">Sizes</th>
+                <th className="text-white">Color</th>
+                <th className="text-white">Style</th>
+                <th className="text-white">Material</th>
+                <th className="text-white">Features</th>
+                <th className="text-white">Description</th>
+                <th className="text-white">Actions</th>
               </tr>
             </thead>
             <tbody>
               {dresses.map((dress) => (
                 <tr key={dress.id}>
-                  <td>{dress.name}</td>
-                  <td>{dress.category_name}</td>
-                  <td>PKR {dress.price.toLocaleString()}</td>
+                  <td className="text-white">{dress.name}</td>
+                  <td className="text-white">
+                    PKR {dress.price.toLocaleString()}
+                  </td>
                   <td>
                     {dress.discount_percentage > 0 ? (
                       <span className="badge bg-danger">
@@ -120,10 +123,22 @@ const ManageDresses = () => {
                       {dress.stock_quantity} in stock
                     </span>
                   </td>
-                  <td>
+                  <td className="text-white">
+                    {Array.isArray(dress.size_available)
+                      ? dress.size_available.join(", ")
+                      : dress.size_available
+                      ? JSON.parse(dress.size_available).join(", ")
+                      : ""}
+                  </td>
+                  <td className="text-white">{dress.color}</td>
+                  <td className="text-white">{dress.style}</td>
+                  <td className="text-white">{dress.material}</td>
+                  <td className="text-white">{dress.features}</td>
+                  <td className="text-white">{dress.description}</td>
+                  <td className="">
                     <Link
                       to={`/edit-dress/${dress.id}`}
-                      className="btn btn-sm btn-outline-primary me-2"
+                      className="btn btn-sm btn-outline-light me-2"
                     >
                       <i className="bi bi-pencil me-1"></i>Edit
                     </Link>

@@ -1,16 +1,9 @@
 const db = require("../db");
 
 exports.getAllDresses = (req, res) => {
-  const { category_id } = req.query;
   let sql =
-    "SELECT d.*, c.name as category_name, " +
-    "(d.price * (1 - d.discount_percentage/100)) as discounted_price " +
-    "FROM dresses d " +
-    "LEFT JOIN categories c ON d.category_id = c.id";
-  if (category_id) {
-    sql += " WHERE d.category_id = ?";
-  }
-  db.query(sql, category_id ? [category_id] : [], (err, result) => {
+    "SELECT *, (price * (1 - discount_percentage/100)) as discounted_price FROM dresses";
+  db.query(sql, [], (err, result) => {
     if (err) {
       console.error(err);
       res.status(500).send("Error retrieving dresses");
@@ -23,11 +16,9 @@ exports.getAllDresses = (req, res) => {
 exports.getDressById = (req, res) => {
   const { id } = req.params;
   const sql = `
-    SELECT d.*, c.name as category_name,
-    (d.price * (1 - d.discount_percentage/100)) as discounted_price
-    FROM dresses d
-    LEFT JOIN categories c ON d.category_id = c.id
-    WHERE d.id = ?
+    SELECT *, (price * (1 - discount_percentage/100)) as discounted_price
+    FROM dresses
+    WHERE id = ?
   `;
   db.query(sql, [id], (err, result) => {
     if (err) {
@@ -46,7 +37,6 @@ exports.getDressById = (req, res) => {
 exports.createDress = (req, res) => {
   const {
     name,
-    category_id,
     description,
     price,
     discount_percentage,
@@ -60,16 +50,15 @@ exports.createDress = (req, res) => {
 
   const sql = `
     INSERT INTO dresses (
-      name, category_id, description, price, discount_percentage, stock_quantity,
+      name, description, price, discount_percentage, stock_quantity,
       size_available, color, style, material, features
-    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
   `;
 
   db.query(
     sql,
     [
       name,
-      category_id,
       description,
       price,
       discount_percentage,
@@ -98,7 +87,6 @@ exports.updateDress = (req, res) => {
   const { id } = req.params;
   const {
     name,
-    category_id,
     description,
     price,
     discount_percentage,
@@ -112,7 +100,7 @@ exports.updateDress = (req, res) => {
 
   const sql = `
     UPDATE dresses
-    SET name = ?, category_id = ?, description = ?, price = ?,
+    SET name = ?, description = ?, price = ?,
         discount_percentage = ?, stock_quantity = ?, size_available = ?,
         color = ?, style = ?, material = ?, features = ?
     WHERE id = ?
@@ -122,7 +110,6 @@ exports.updateDress = (req, res) => {
     sql,
     [
       name,
-      category_id,
       description,
       price,
       discount_percentage,
@@ -147,26 +134,12 @@ exports.updateDress = (req, res) => {
 
 exports.deleteDress = (req, res) => {
   const { id } = req.params;
-  db.query("SELECT id FROM orders WHERE dress_id = ?", [id], (err, result) => {
+  db.query("DELETE FROM dresses WHERE id = ?", [id], (err) => {
     if (err) {
       console.error(err);
-      res.status(500).send("Error checking dress references");
+      res.status(500).send("Error deleting dress");
       return;
     }
-    if (result.length > 0) {
-      res.status(400).json({
-        error: "Cannot delete dress",
-        message: "This dress has existing orders and cannot be deleted",
-      });
-      return;
-    }
-    db.query("DELETE FROM dresses WHERE id = ?", [id], (err) => {
-      if (err) {
-        console.error(err);
-        res.status(500).send("Error deleting dress");
-        return;
-      }
-      res.json({ message: "Dress deleted successfully" });
-    });
+    res.json({ message: "Dress deleted successfully" });
   });
 };

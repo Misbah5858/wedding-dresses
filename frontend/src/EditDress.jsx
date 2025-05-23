@@ -5,13 +5,11 @@ import { Link, useNavigate, useParams } from "react-router-dom";
 const EditDress = () => {
   const navigate = useNavigate();
   const { id } = useParams();
-  const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
   const [submitLoading, setSubmitLoading] = useState(false);
   const [error, setError] = useState(null);
   const [formData, setFormData] = useState({
     name: "",
-    category_id: "",
     description: "",
     price: "",
     discount_percentage: 0,
@@ -24,17 +22,14 @@ const EditDress = () => {
   });
 
   useEffect(() => {
-    Promise.all([
-      axios.get(`http://localhost:3000/dresses/${id}`),
-      axios.get("http://localhost:3000/categories"),
-    ])
-      .then(([dressRes, categoriesRes]) => {
+    axios
+      .get(`http://localhost:3000/dresses/${id}`)
+      .then((dressRes) => {
         const dress = dressRes.data;
         setFormData({
           ...dress,
           size_available: JSON.parse(dress.size_available),
         });
-        setCategories(categoriesRes.data);
         setLoading(false);
       })
       .catch((err) => {
@@ -138,26 +133,6 @@ const EditDress = () => {
                   </div>
 
                   <div className="row mb-4">
-                    <div className="col-md-6">
-                      <label htmlFor="category_id" className="form-label">
-                        <i className="bi bi-folder me-2"></i>Category
-                      </label>
-                      <select
-                        className="form-select form-select-lg"
-                        id="category_id"
-                        name="category_id"
-                        value={formData.category_id}
-                        onChange={handleChange}
-                        required
-                      >
-                        <option value="">Select Category</option>
-                        {categories.map((category) => (
-                          <option key={category.id} value={category.id}>
-                            {category.name}
-                          </option>
-                        ))}
-                      </select>
-                    </div>
                     <div className="col-md-6">
                       <label htmlFor="price" className="form-label">
                         <i className="bi bi-currency-dollar me-2"></i>Price

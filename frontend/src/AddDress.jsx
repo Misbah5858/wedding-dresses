@@ -1,15 +1,13 @@
 /* eslint-disable no-unused-vars */
 import axios from "axios";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 
 const AddDress = () => {
   const navigate = useNavigate();
-  const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     name: "",
-    category_id: "",
     description: "",
     price: "",
     discount_percentage: 0,
@@ -20,18 +18,6 @@ const AddDress = () => {
     material: "",
     features: "",
   });
-
-  useEffect(() => {
-    // Fetch categories
-    axios
-      .get("http://localhost:3000/categories")
-      .then((response) => {
-        setCategories(response.data);
-      })
-      .catch((error) => {
-        console.error("Error fetching categories:", error);
-      });
-  }, []);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -81,7 +67,7 @@ const AddDress = () => {
     <div>
       <div className="page-header">
         <div className="container">
-          <h1 className="display-4">Add New Dress</h1>
+          <h1 className="display-4 ">Add New Dress</h1>
           <p className="lead">Add a new dress to your inventory</p>
         </div>
       </div>
@@ -108,26 +94,6 @@ const AddDress = () => {
                   </div>
 
                   <div className="row mb-4">
-                    <div className="col-md-6">
-                      <label htmlFor="category_id" className="form-label">
-                        <i className="bi bi-folder me-2"></i>Category
-                      </label>
-                      <select
-                        className="form-select form-select-lg"
-                        id="category_id"
-                        name="category_id"
-                        value={formData.category_id}
-                        onChange={handleChange}
-                        required
-                      >
-                        <option value="">Select Category</option>
-                        {categories.map((category) => (
-                          <option key={category.id} value={category.id}>
-                            {category.name}
-                          </option>
-                        ))}
-                      </select>
-                    </div>
                     <div className="col-md-6">
                       <label htmlFor="price" className="form-label">
                         <i className="bi bi-currency-dollar me-2"></i>Price
